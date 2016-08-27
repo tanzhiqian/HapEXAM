@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- ~ #{copyright}# -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="hbi.core.demo.mapper.OrderMessageMapper">
+
+	<resultMap id="BaseResultMap" type="hbi.core.demo.dto.OrderMessage" extends="com.hand.hap.mapper.StdMapper.STD">
+        <result column="ORDER_NUMBER" property="orderNumber" jdbcType="VARCHAR"/>
+        <result column="ORDER_DATE" property="orderDate" jdbcType="DATE"/>
+        <result column="ORDER_STATUS" property="orderStatus" jdbcType="VARCHAR"/>
+        <result column="COMPANY_NAME" property="companyName" jdbcType="VARCHAR"/>
+        <result column="CUSTOMER_NAME" property="customerName" jdbcType="VARCHAR"/>
+        <result column="ORDER_MONEY" property="orderMoney" jdbcType="DECIMAL"/>
+    </resultMap>
+	<select id="getOrderMessage"  resultMap="BaseResultMap">
+		  select he.ORDER_NUMBER,
+				 co.COMPANY_NAME,
+				 cus.CUSTOMER_NAME,
+				 he.ORDER_DATE,
+				 he.ORDER_STATUS,
+				 it.INVENTORY_ITEM_ID,
+				 li.ORDERD_QUANTITY * li.UNIT_SELLING_PRICE ORDER_MONEY
+			from hap_ar_customers cus,
+			 	 hap_inv_inventory_items it,
+			 	 hap_om_order_headers he,
+			 	 hap_om_order_lines li,
+			 	 hap_org_companys co
+	<where>
+			 and cus.COMPANY_ID = co.COMPANY_ID
+	  		 and cus.CUSTOMER_ID = he.CUSTOMER_ID
+			 and it.INVENTORY_ITEM_ID = li.INVENTORY_ITEM_ID
+			 and he.COMPANY_ID = co.COMPANY_ID
+			 and he.HEADER_ID = li.HEADER_ID
+        	<if test="companyName != null">
+                and co.company_name like #{companyName,jdbcType=VARCHAR}
+            </if>
+            <if test="customerName != null">
+                and cus.customer_name like #{customerName,jdbcType=VARCHAR}
+            </if>
+            <if test="orderNumber != null">
+                and order_number like #{orderNumber,jdbcType=VARCHAR}
+            </if>
+            <if test="inventoryItemId != null">
+                and it.inventory_item_id like #{inventoryItemId,jdbcType=VARCHAR}
+            </if>
+            <if test="orderStatus != null">
+                AND order_status like #{orderStatus,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+</mapper>
+
+
+<!-- <mapper namespace="hbi.core.demo.mapper.OrderMessageMapper">
+<ResultMap namespace="hbi.core.demo.mapper.OrderMessageMapper">
+	<result column="ORDER_NUMBER" property="orderNumber" jdbcType="VARCHAR"/>
+        <result column="ORDER_DATE" property="orderDate" jdbcType="DATE"/>
+        <result column="ORDER_STATUS" property="orderStatus" jdbcType="VARCHAR"/>
+        <result column="COMPANY_NAME" property="companyName" jdbcType="VARCHAR"/>
+        <result column="CUSTOMER_NAME" property="customerName" jdbcType="VARCHAR"/>
+        <result column="ORDER_MONEY" property="orderMoney" jdbcType="DECIMAL"/>
+</ResultMap>
+	<select id="getOrderMessage" resultType="hbi.core.demo.dto.OrderMessage">
+		select
+		hoc.COMPANY_NAME as companyName ,
+		hooh.ORDER_NUMBER as opderNumber,
+		hac.CUSTOMER_NAME as customerName ,
+		hooh.ORDER_DATE as orderDate ,
+		hooh.ORDER_STATUS as orderStaus
+		from
+		hap_om_order_headers hooh
+		left join hap_org_companys hoc on hoc.COMPANY_ID=hooh.COMPANY_ID
+		left JOIN hap_ar_customers hac on hooh.CUSTOMER_ID=hac.CUSTOMER_ID
+	</select>
+</mapper> -->

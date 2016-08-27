@@ -1,0 +1,286 @@
+<#-- * description: Fruit.html * version: 1.0 *
+author:taotao.xu@hand-china.com * #{copyright}# * --> <#include
+"../include/head.html">
+<body style="padding: 10px;">
+	<form id="companysForm"></form>
+	<div id="companysGrid" style="margin: 0; padding: 0"></div>
+	<script type="text/javascript">
+    $(function() {
+    	/* debugger; */
+    	window.editFunctionResources = function (id) {
+            /* window.popWin = $.ligerDialog.open({
+                title : '订单明细',
+                width : 1180,
+                height: 570,
+                url   : 'addOrder.html?headerId'+id
+            }); */
+        };
+    	
+        window['companysForm'] = $("#companysForm").ligerForm({
+            fields : [
+		<!--lov -->
+		
+		{
+        	display:'<@spring.message "hbi.core.demo.dto.companyname"/>',
+        	name:'companyIdLov',
+        	type:'popup',
+        	newline:false,
+        	textField:'companyName',
+        	group:'订单汇总查询',
+        	width: 120,
+        	editor:${lovService.getLov(base.contextPath,base.locale,"showCompany")} 
+    },{
+    	display:'<@spring.message "hbi.core.demo.dto.customername"/>',
+    	name:'customerId',
+    	type:'popup',
+    	newline:false,
+    	textField:'customerName',
+    	width: 120,
+    	options: $.extend(${lovService.getLov(base.contextPath, base.locale, "showCustomer")},{
+    	    onLoadData: function() {
+    	        this.setParm('companyId', $.ligerui.get('companyIdLov').getValue())
+    	    }
+    	})
+   
+}
+, 
+		<!--lov -->
+		{
+            type : 'text',
+            newline:false,
+            label : '<@spring.message "hbi.core.demo.companys.销售订单号"/>',
+            name : 'companysId',
+            width: 120
+        },
+        {		display:'物料',
+        	name:'inventoryItemsId',
+        	type:'popup',
+        	textField:'itemDescription',
+        	group:'订单汇总查询',
+        	width: 120,
+        	/* editor:${lovService.getLov(base.contextPath,base.locale,"公司名称")}  */
+        	options:{
+            readonly:false,//是否可编辑
+            valueField : 'inventoryItemId',//选中的valueField
+            textField : 'itemDescription',//选中的textField
+            grid : {
+                columns : [{
+                    display : "物料编码",
+                    name : "inventoryItemId",
+                    width : 150,
+                    type : "text",
+                    align : "left"
+                },
+                {
+                    display : "物料描述",
+                    name : "itemDescription",
+                    width : 150,
+                    type : "text",
+                    align : "left"
+                }],
+                //数据查询的url
+                url : '${base.contextPath}/inventoryItems/query',
+                onLoadData: function(){
+                    this.setParm('inventoryItemId', $.ligerui.get('inventoryItemsId').getValue())
+                }
+            },
+          //lov上的查询条件
+            condition : {
+                inputWidth : 150,
+                labelWidth : 70,
+                fields : [ {
+                    display : '物料编码',
+                    name : "inventoryItemId",
+                    newline : true,
+                    type : "text"
+                }, {
+                    display : '物料描述',
+                    name : "itemDescription",
+                    newline : false,
+                    type : "text"
+                } ]
+			            }
+			        }
+				},
+      			
+						{
+				         display: "订单状态",
+				         newline:false,
+				         name: "companysSelect",
+				         width: 120,
+				         type: "select",
+				         textField:"companysDescription",
+				         options : {
+			                    valueField : 'ID',
+			                    textField : 'text',
+			                    data : [ {
+			                        ID : 'orderStatus',
+			                        text : '新建'
+			                    }, {
+			                        ID : 'orderStatus',
+			                        text : '已提交'
+			                    },
+			                    {
+			                        ID : 'orderStatus',
+			                        text : '已审批'
+			                    } ,{
+			                        ID : 'orderStatus',
+			                        text : '已拒绝'
+			                    } ]
+			                }
+				        } 
+        <!--联动 -->
+        /* , {
+                type : 'text',
+                label : '<@spring.message "hbi.core.demo.fruit.名字"/>',
+                name : 'fruitName',
+              <!--  newline : false,-->
+                width: 120
+            }, {
+                type : 'text',
+                label : '<@spring.message "hbi.core.demo.fruit.描述"/>',
+                name : 'fruitDescription',
+                newline:false,
+                width: 120
+            } */],
+           
+            buttons : [ {
+                text : '<@spring.message "hap.query"/>',
+                disabled : false,
+                width : 60,
+                click : function() {
+                    Hap.gridQuery({
+                        form : companysForm,
+                        grid : companysGrid})
+                     }
+            },
+            {
+                text    : '<@spring.message "hap.reset"/>',
+                disabled: false,
+                width   : 60,
+                click   : function () {
+                	companysForm.reset();
+                }
+            },
+            {
+                text : '导出EXCEL',
+                disabled : false,
+                width : 60, 
+                click : function() {
+                	window.popWin=$.ligerDialog.open({
+                		load :false,
+                		width : 800,
+                		height : 500,
+                		title :'<@spring.message "sysfile.download"/>',
+                		url:'downLoadFile.html'
+                	})
+                }
+            }]
+        });
+
+        window['companysGrid'] = $("#companysGrid").ligerGrid({
+            unSetValidateAttr : false,
+            columns : [ {
+                display : '<@spring.message "hbi.core.demo.dto.OrderMessage.销售订单号"/>',
+                name : 'orderNumber',
+                align : 'left',
+                width : 120,
+               /*  isSort : false,
+                render : function (rowdata) {						                    	
+                    if (!!rowdata.headerId) {
+                        return '<a href="#" onclick="editFunctionResources(' + rowdata.headerId + ')">'+rowdata.orderNumber+'</a>'
+                    }
+                } , */
+                editor : {
+                    type : 'text'
+                },
+                validate: {
+                    required: true
+                }
+                
+            },{
+                display : '公司名称',
+                name : 'companyName',
+                align : 'left',
+                width : 120,
+                editor : {
+                    type : 'text'
+                }, 
+                validate: {
+                    required: true
+                }
+            },{
+                display : '<@spring.message "hbi.core.demo.dto.OrderMessage.客户名称"/>',
+                name : 'customerName',
+                align : 'left',
+                width : 120,
+                editor : {
+                    type : 'text'
+                },
+                validate: {
+                    required: true
+                }
+            }, {
+                display : '<@spring.message "hbi.core.demo.dto.OrderMessage.订单日期"/>',
+                name : 'orderDate',
+                align : 'left',
+                width : 150,
+                format:"yyyy-MM-dd",
+                type : 'date',
+                editor : {
+                	  type : 'date'
+                }
+            },{
+                display : '<@spring.message "hbi.core.demo.dto.OrderMessage.订单状态"/>',
+                name : 'orderStatus',
+                align : 'left',
+                width : 150,
+                editor : {
+                    type : 'text'
+                },
+                validate: {
+                    required: true
+                }
+            },{
+                display : '<@spring.message "hbi.core.demo.dto.OrderMessage.订单金额"/>',
+                name : 'orderMoney',
+                align : 'left',
+                width : 150,
+                editor : {
+                    type : 'text'
+                },
+                validate: {
+                    required: true
+                }
+            }],
+            
+            
+            
+            url : '${base.contextPath}/getOrderMessage',
+            toolbar : {
+                items : [ {
+                    text : '<@spring.message "hap.new"/>',
+                    disable : false,
+                    click : function() {
+                    	window.popWin=$.ligerDialog.open({
+                    		load :false,
+                    		width : 1000,
+                    		height : 600,
+                    		title :'<@spring.message "hap.new"/>',
+                    		url:'addOrder.html'
+                    	})
+                    }
+                } ]
+            },
+            
+            
+            enabledEdit : false,
+            width : '99%',
+            height : '98%',
+            checkbox : true
+        });
+    });
+    
+    </script>
+</body>
+</html>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="hbi.core.demo.mapper.OrderHeadersMapper">
+
+    <resultMap id="OrderHeaderResultMap" type="hbi.core.demo.dto.OrderHeaders">
+        <result column="HEADER_ID" property="headerId" jdbcType="INTEGER"/>
+        <result column="ORDER_NUMBER" property="orderNumber" jdbcType="VARCHAR"/>
+        <result column="COMPANY_ID" property="companyId" jdbcType="INTEGER"/>
+        <result column="ORDER_DATE" property="orderData" jdbcType="TIMESTAMP"/>
+        <result column="ORDER_STATUS" property="orderStatus" jdbcType="VARCHAR"/>
+        <result column="CUSTOMER_ID" property="customerId" jdbcType="INTEGER"/>
+    </resultMap>
+    <select id="findOrderHeader" parameterType="hbi.core.demo.dto.OrderHeaders" resultMap="OrderHeaderResultMap">
+        SELECT
+            headers.HEADER_ID,headers.ORDER_NUMBER,
+            headers.COMPANY_ID,headers.ORDER_DATE,
+            headers.ORDER_STATUS,headers.CUSTOMER_ID
+        FROM HAP_OM_ORDER_HEADERS headers
+        <where>
+            <if test="headerId != null">
+                headers.HEADER_ID = #{headerId,jdbcType="INTEGER"}
+            </if>
+            <if test="orderNumber != null">
+                AND headers.ORDER_NUMBER = #{orderNumber,jdbcType="VARCHAR"}
+            </if>
+            <if test="companyId != null">
+                AND headers.COMPANY_ID like concat('%',concat(#{companyId,jdbcType="INTEGER"},'%'))
+            </if>
+            <if test="orderData != null">
+                AND headers.ORDER_DATE like concat('%',concat(#{orderData,jdbcType="DATA"},'%'))
+            </if>
+            <if test="orderStatus != null">
+                AND headers.ORDER_STATUS like concat('%',concat(#{orderStatus,jdbcType="DATA"},'%'))
+            </if>
+            <if test="customerId != null">
+                AND headers.CUSTOMER_ID like concat('%',concat(#{customerId,jdbcType="INTEGER"},'%'))
+            </if>
+        </where>
+    </select>
+
+</mapper>

@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- ~ #{copyright}# -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="hbi.core.demo.mapper.InventoryItemsMapper">
+	<resultMap id="BaseResultMap" type="hbi.core.demo.dto.InventoryItems"
+		extends="com.hand.hap.mapper.StdMapper.STD">
+		<result column="INVENTORY_ITEM_ID" property="inventoryItemId"
+			jdbcType="DECIMAL" />
+		<result column="ITEM_CODE" property="itemCode" jdbcType="VARCHAR" />
+		<result column="ITEM_UOM" property="itemUom" jdbcType="VARCHAR" />
+		<result column="ITEM_DESCRIPTION" property="itemDescription"
+			jdbcType="VARCHAR" />
+		<result column="ORDER_FLAG" property="orderFlag" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<select id="selectByInventoryItems" parameterType="hbi.core.demo.dto.InventoryItems"
+		resultMap="BaseResultMap">
+		SELECT INVENTORY_ITEM_ID,
+		ITEM_CODE,
+		item_uom,
+		item_description,
+		order_flag
+		FROM hap_inv_inventory_items
+		<where>
+			<if test="inventoryItemId != null">
+				and inventoryItem_id = #{inventoryItemId,jdbcType=DECIMAL}
+			</if>
+			<if test="itemCode != null">
+				AND item_code like #{itemCode,jdbcType=VARCHAR}
+			</if>
+			<if test="itemUom != null">
+				AND item_uom like #{itemUom,jdbcType=VARCHAR}
+			</if>
+			<if test="itemDescription != null">
+				AND item_description like #{itemDescription,jdbcType=VARCHAR}
+			</if>
+			<if test="orderFlag != null">
+				AND order_flag like #{orderFlag,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+
+	<insert id="insertInventoryItems" parameterType="hbi.core.demo.dto.InventoryItems"
+		useGeneratedKeys="true" keyProperty="inventoryItemId">
+
+		INSERT INTO hap_inv_inventory_items
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="inventoryItemId != null">
+				INVENTORY_ITEM_ID,
+			</if>
+			<if test="itemCode != null">
+				ITEM_CODE,
+			</if>
+			<if test="itemUom != null">
+				ITEM_UOM,
+			</if>
+			<if test="itemDescription != null">
+				ITEM_DESCRIPTION,
+			</if>
+			<if test="orderFlag != null">
+				ORDER_FLAG,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="inventoryItemId != null">
+				#{inventoryItemId,jdbcType=DECIMAL},
+			</if>
+			<if test="itemCode != null">
+				#{itemCode,jdbcType=VARCHAR},
+			</if>
+			<if test="itemUom != null">
+				#{itemUom,jdbcType=VARCHAR},
+			</if>
+			<if test="itemDescription != null">
+				#{itemDescription,jdbcType=VARCHAR},
+			</if>
+			<if test="orderFlag != null">
+				#{orderFlag,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+
+	<update id="updateInventoryItems" parameterType="hbi.core.demo.dto.InventoryItems">
+		update hap_inv_inventory_items
+		<set>
+			<if test="itemCode != null">
+				ITEM_CODE = #{itemCode,jdbcType=VARCHAR},
+			</if>
+			<if test="itemUom != null">
+				ITEM_UOM = #{itemUom,jdbcType=VARCHAR},
+			</if>
+			<if test="itemDescription != null">
+				ITEM_DESCRIPTION = #{itemDescription,jdbcType=VARCHAR},
+			</if>
+			<if test="orderFlag != null">
+				ORDER_FLAG = #{orderFlag,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where INVENTORY_ITEM_ID = #{inventoryItemId,jdbcType=DECIMAL}
+	</update>
+
+	<delete id="deleteInventoryItems" parameterType="hbi.core.demo.dto.InventoryItems">
+		delete from hap_org_companys hoc
+		where hoc.INVENTORY_ITEM_ID= #{inventoryItemId,jdbcType=DECIMAL}
+	</delete>
+</mapper>

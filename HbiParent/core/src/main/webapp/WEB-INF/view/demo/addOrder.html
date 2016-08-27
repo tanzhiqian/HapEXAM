@@ -1,0 +1,476 @@
+<#--
+ * description: 添加订单
+ * version: 1.0
+ * #copyright#
+ *
+-->
+<#include "../include/head.html">
+<body style="padding: 10px;">
+<form id="addOrderForm"></form>
+<div id="orderDetailGrid" name="orderDetailGrid"></div>
+	<div style="overflow: hidden;margin: 0;padding: 0" class="liger-tab">
+		<div tabid="homeTab" title="主要" lselected="true">
+			<div id="homeGrid" style="margin: 0;padding: 0"></div>
+		</div>
+		<div tabid="otherTab" title="其他" style="margin: 0;padding: 0">
+			<div id="otherGrid" style="margin: 0;padding: 0"></div>
+		</div>
+	</div>
+
+<script src="${base.contextPath}/common/code?orderStatus=HAP_OM_ORDER_STATUS" type="text/javascript"></script>
+<script type="text/javascript">
+
+    $(function () {
+        window['addOrderForm'] = $("#addOrderForm").ligerForm({
+            fields : [{
+                label: '订单编号',
+                type : 'text',
+                group:'订单明细查询',
+                name : 'orderNumber',
+                width  : 120,
+                validate : {
+                    required : true
+                }
+            },{
+            	display:'<@spring.message "hbi.core.demo.dto.companyname"/>',
+            	name:'companyIdLov',
+            	type:'popup',
+            	newline:false,
+            	textField:'companyName',
+            	
+            	width: 120,
+            	editor:${lovService.getLov(base.contextPath,base.locale,"showCompany")} 
+        },{
+        	display:'<@spring.message "hbi.core.demo.dto.customername"/>',
+        	name:'customerId',
+        	type:'popup',
+        	newline:false,
+        	textField:'customerName',
+        	width: 120,
+        	options: $.extend(${lovService.getLov(base.contextPath, base.locale, "showCustomer")},{
+        	    onLoadData: function() {
+        	        this.setParm('companyId', $.ligerui.get('companyIdLov').getValue())
+        	    }
+        	})
+       
+    },{
+                display: '订单日期',
+                name   : 'orderData',
+                align  : 'center',
+                width  : 120,
+                type:'date',
+                format : "yyyy-MM-dd",
+                newline  :true,
+                editor : {
+                    type: 'date'
+                },
+                validate : {
+                    required : true
+                }
+            },{
+                label: '订单总金额',
+                type : 'text',
+                name : 'rental',
+                newline  :false,
+                width  : 120
+            },{
+                display : '订单状态',
+                name : 'orderStatus',
+                width : 120,
+                align : 'counter',
+                textField : 'meaning',
+                newline  :false,
+                type : 'select',
+                editor : {
+                    type : 'select',
+                    data : orderStatus,
+                    valueField : 'value',
+                    textField : 'meaning',
+                    slide : true
+                },
+                validate : {
+                    required : false
+                }
+            }],
+            buttons: [{
+                text    : '保存',
+                disabled: false,
+                width   : 60,
+                click   : function () {
+                    alert("保存");
+                }
+            },{
+                text    : '提交',
+                disabled: false,
+                width   : 60,
+                click   : function () {
+                    alert("提交");
+                }
+            },{
+                text    : '审批',
+                disabled: false,
+                width   : 60,
+                click   : function () {
+                    alert("审批");
+                }
+            },{
+                text    : '拒绝',
+                disabled: false,
+                width   : 60,
+                click   : function () {
+                    alert("拒绝");
+                }
+            },{
+                text    : '整单删除',
+                disabled: false,
+                width   : 60,
+                click   : function () {
+                    alert("整单删除");
+                }
+            },{
+                text    : '单据打印',
+                disabled: false,
+                width   : 60,
+                click   : function () {
+                    alert("单据打印");
+                }
+            },{
+                text    : '返回',
+                disabled: false,
+                width   : 60,
+                click   : function () {
+                    alert("返回");
+                }
+            }]
+        });
+		
+        window['homeGrid'] = $("#homeGrid").ligerGrid({
+            /*unSetValidateAttr: false,*/
+            columns          : [{
+                display  : '物料编码',
+                name     : 'inventoryItemId',
+                textField: 'attribute1',
+                type     : 'popup',
+                newline  :false,
+                validate:{
+                    required:true
+                },
+                editor  : {
+                    type      : 'popup',
+                    valueField: 'inventoryItemId',
+                    textField : 'itemCode',
+                    grid      : {
+                        columns: [{
+                            display: '物料ID',
+                            name   : "inventoryItemId",
+                            align  : 'left',
+                            width  : 200
+                        },{
+                            display: '物料代码',
+                            name   : "itemCode",
+                            align  : 'left',
+                            width  : 200
+                        }, {
+                            display: '物料描述',
+                            name   : "itemDescription",
+                            align  : 'left',
+                            width  : 200
+                        }],
+                        url    : '${base.contextPath}/inventoryItems/query'
+                    },
+                    condition : {
+                        inputWidth: 150,
+                        labelWidth: 70,
+                        fields    : [{
+                            display: '物料ID',
+                            name   : "inventoryItemId",
+                            newline: true,
+                            type   : "text"
+                        },{
+                            display: '物料代码',
+                            name   : "itemCode",
+                            newline: false,
+                            type   : "text"
+                        }, {
+                            display: '物料描述',
+                            name   : "itemDescription",
+                            newline: false,
+                            type   : "text"
+                        }]
+                    }
+                }
+            },{
+                display: '物料描述',
+                name   : 'itemDescription',
+                align  : 'left',
+                width  : 120,
+                editor : {
+                    type: 'text'
+                },
+                validate:{
+                    required:false
+                }
+            },{
+                display: '产品单位',
+                name   : 'itemUom',
+                align  : 'left',
+                width  : 120,
+                editor : {
+                    type: 'text'
+                },
+                validate:{
+                    required:false
+                }
+            },{
+                display: '数量',
+                name   : 'orderQuantity',
+                align  : 'left',
+                width  : 120,
+                editor : {
+                    type: 'text'
+                },
+                validate:{
+                    required:true
+                }
+            },{
+                display: '销售单价',
+                name   : 'unitSellingPrice',
+                align  : 'left',
+                width  : 120,
+                editor : {
+                    type: 'text'
+                },
+                validate:{
+                    required:true
+                }
+            },{
+                display: '金额',
+                name   : 'rental',
+                align  : 'left',
+                width  : 120,
+                editor : {
+                    type: 'text'
+                },
+                validate:{
+                    required:true
+                }
+            },{
+                display: '备注',
+                name   : 'remark',
+                align  : 'left',
+                width  : 120,
+                editor : {
+                    type: 'text'
+                },
+                validate:{
+                    required:false
+                }
+            }],
+            url              : '/orderLines/query',
+            toolbar          : {
+                items: [{
+                    text   : '<@spring.message "hap.new"/>',
+                    disable: false,
+                    click  : function () {
+                        addOrderGrid.addRow({})
+                    },
+                    icon   : 'add'
+                }, {
+                    line: true
+                }, {
+                    text : '<@spring.message "hap.delete"/>',
+                    click: function () {
+                        Hap.gridDelete({
+                            grid: addOrderGrid,
+                            url : ''
+                        })
+
+                    },
+                    icon : 'delete'
+                }, {
+                    line: true
+                }, {
+                    text : '<@spring.message "hap.save"/>',
+                    click: function () {
+                        Hap.gridSave({
+                            form : addOrderForm,
+                            grid : addOrderGrid,
+                            url  : '${base.contextPath}/order/submit'
+                        })
+                    },
+                    icon : 'save'
+                }]
+            },
+            enabledEdit      : true,
+            width            : '99%',
+            height           : '98%',
+            checkbox         : true,
+            onAfterEdit   : function (item) {
+                var name = item.column.name;
+                var data = item.record;
+                if(name == 'inventoryItemId'){
+                    $.ajax({
+                        url : '${base.contextPath}/inventoryItems/query?inventoryItemId='+data.inventoryItemId,
+                        type:'post',
+                        success:function(data){
+                            addOrderGrid.updateCell('itemDescription',data.rows[0].itemDescription,item.record);
+                            addOrderGrid.updateCell('itemUom',data.rows[0].itemUom,item.record);
+                        }
+                    })
+
+                }
+                if(name == 'unitSellingPrice'){
+                    if(data.orderQuantity <= 0){
+                        addOrderGrid.updateCell('orderQuantity',1,item.record);
+                    }else{
+                        addOrderGrid.updateCell('rental' , data.orderQuantity * data.unitSellingPrice , item.record);
+                    }
+                }
+                return true;
+            }
+        });
+        
+        
+        
+        
+        
+        
+        
+        
+        window['otherGrid'] = $("#otherGrid").ligerGrid({
+            /*unSetValidateAttr: false,*/
+            columns          : [{
+                
+                display: '附件信息1',
+                name   : 'attribute1',
+                align  : 'left',
+                width  : 120,
+                editor : {
+                    type: 'text'
+                },
+                validate:{
+                    required:false
+                }
+            },{
+                display: '附件信息2',
+                name   : 'attribute2',
+                align  : 'left',
+                width  : 120,
+                editor : {
+                    type: 'text'
+                },
+                validate:{
+                    required:false
+                }
+            },{
+                display: '附件信息3',
+                name   : 'attribute3',
+                align  : 'left',
+                width  : 120,
+                editor : {
+                    type: 'text'
+                },
+                validate:{
+                    required:true
+                }
+            },{
+                display: '附件信息4',
+                name   : 'attribute4',
+                align  : 'left',
+                width  : 120,
+                editor : {
+                    type: 'text'
+                },
+                validate:{
+                    required:true
+                }
+            },{
+                display: '附件信息5',
+                name   : 'attribute5',
+                align  : 'left',
+                width  : 120,
+                editor : {
+                    type: 'text'
+                },
+                validate:{
+                    required:true
+                }
+            },{
+                display: '附件信息6',
+                name   : 'attribute6',
+                align  : 'left',
+                width  : 120,
+                editor : {
+                    type: 'text'
+                },
+                validate:{
+                    required:false
+                }
+            }],
+            url              : '',
+            toolbar          : {
+                items: [{
+                    text   : '<@spring.message "hap.new"/>',
+                    disable: false,
+                    click  : function () {
+                        addOrderGrid.addRow({})
+                    },
+                    icon   : 'add'
+                }, {
+                    line: true
+                }, {
+                    text : '<@spring.message "hap.delete"/>',
+                    click: function () {
+                        Hap.gridDelete({
+                            grid: addOrderGrid,
+                            url : ''
+                        })
+
+                    },
+                    icon : 'delete'
+                }, {
+                    line: true
+                }, {
+                    text : '<@spring.message "hap.save"/>',
+                    click: function () {
+                        Hap.gridSave({
+                            form : addOrderForm,
+                            grid : addOrderGrid,
+                            url  : '${base.contextPath}/order/submit'
+                        })
+                    },
+                    icon : 'save'
+                }]
+            },
+            enabledEdit      : true,
+            width            : '99%',
+            height           : '98%',
+            checkbox         : true,
+            onAfterEdit   : function (item) {
+                var name = item.column.name;
+                var data = item.record;
+                if(name == 'inventoryItemId'){
+                    $.ajax({
+                        url : '${base.contextPath}/inventoryItems/query?inventoryItemId='+data.inventoryItemId,
+                        type:'post',
+                        success:function(data){
+                            addOrderGrid.updateCell('itemDescription',data.rows[0].itemDescription,item.record);
+                            addOrderGrid.updateCell('itemUom',data.rows[0].itemUom,item.record);
+                        }
+                    })
+
+                }
+                if(name == 'unitSellingPrice'){
+                    if(data.orderQuantity <= 0){
+                        addOrderGrid.updateCell('orderQuantity',1,item.record);
+                    }else{
+                        addOrderGrid.updateCell('rental' , data.orderQuantity * data.unitSellingPrice , item.record);
+                    }
+                }
+                return true;
+            }
+        });
+    });
+</script>
+</body>
+</html>

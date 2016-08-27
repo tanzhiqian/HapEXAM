@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- ~ #{copyright}# -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="hbi.core.demo.mapper.OrderLinesMapper">
+	<resultMap id="BaseResultMap" type="hbi.core.demo.dto.OrderLines"
+		extends="com.hand.hap.mapper.StdMapper.STD">
+		<result column="LINE_NUMBER" property="attribute4" jdbcType="DECIMAL" />
+		<result column="ITEM_CODE" property="attribute1" jdbcType="VARCHAR" />
+		<result column="ITEM_DESCRIPTION" property="attribute2" jdbcType="VARCHAR" />
+		<result column="ORDER_QUANTITY_UOM" property="attribute5" jdbcType="VARCHAR" />
+		<result column="ORDERD_QUANTITY" property="attribute6" jdbcType="DECIMAL"/>
+		<result column="UNIT_SELLING_PRICE" property="attribute7" jdbcType="DECIMAL"/>
+		<result column="money" property="attribute3" jdbcType="DECIMAL"/>
+		<result column="DESCRIPTION" property="attribute8" jdbcType="VARCHAR"/>
+		<result column="ADDITION1" property="attribute9" jdbcType="VARCHAR"/>
+		<result column="ADDITION2" property="attribute10" jdbcType="VARCHAR"/>
+		<result column="ADDITION3" property="attribute11" jdbcType="VARCHAR"/>
+		<result column="ADDITION4" property="attribute12" jdbcType="VARCHAR"/>
+		<result column="ADDITION5" property="attribute13" jdbcType="VARCHAR"/>
+	</resultMap>
+
+	<select id="selectByLine" parameterType="hbi.core.demo.dto.OrderLines"
+		resultMap="BaseResultMap">
+		select lin.LINE_NUMBER,item.ITEM_CODE,item.ITEM_DESCRIPTION,lin.ORDER_QUANTITY_UOM,lin.ORDERD_QUANTITY,lin.UNIT_SELLING_PRICE,lin.UNIT_SELLING_PRICE*lin.ORDERD_QUANTITY money,
+			lin.DESCRIPTION,lin.LINE_NUMBER,lin.ADDITION1,lin.ADDITION2,lin.ADDITION3,lin.ADDITION4,lin.ADDITION5
+		from hap_om_order_lines lin,hap_inv_inventory_items item
+		where lin.INVENTORY_ITEM_ID = item.INVENTORY_ITEM_ID
+	</select>
+</mapper>

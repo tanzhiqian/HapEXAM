@@ -1,0 +1,293 @@
+<#--
+ * description: Fruit.html
+ * version: 1.0 
+ * author:taotao.xu@hand-china.com
+ * #{copyright}#
+ * 
+-->
+<#include "../include/head.html">
+<body style="padding: 10px;">
+	<form id="order_detailForm"></form>
+    <div id="order_detailGrid" style="margin: 0; padding: 0"></div>
+    <script type="text/javascript">
+    $(function() {
+    	debugger;
+    	//�༭
+    	 /* window.editCode = function (fruitId) {
+             var url = 'sys_message_fruit_edit.html';
+             if (fruitId) {
+                 url = url + '?isedit=1&fruitId=' + fruitId;
+             }
+             window.popWin = $.ligerDialog.open({
+                 width : 900,
+                 height: 550,
+                 url   : url
+             });
+         }; */
+        
+         
+         //vol
+        window['order_detailForm'] = $("#order_detailForm").ligerForm({
+            fields : [  
+                        //订单编号
+                        {
+                            type : 'text',
+                            label : '<@spring.message "hbi.core.demo.dto.ordernumber"/>',
+                            name : 'orderNumber',
+                            newline : false,
+                            group:'订单明细',
+                            width: 120
+                            },
+                            //公司名称
+                            {
+						        	display:'<@spring.message "hbi.core.demo.dto.公司名称"/>',
+						        	name:'companyIdLov',
+						        	type:'popup',
+						        	newline:false,
+						        	textField:'companyName',
+						        	group:'订单汇总查询',
+						        	width: 120,
+						        	editor:${lovService.getLov(base.contextPath,base.locale,"showCompany")} 
+						    },{
+						    	display:'<@spring.message "hbi.core.demo.dto.客户名称"/>',
+						    	name:'customerId',
+						    	type:'popup',
+						    	newline:false,
+						    	textField:'customerName',
+						    	width: 120,
+						    	options: $.extend(${lovService.getLov(base.contextPath, base.locale, "showCustomer")},{
+						    	    onLoadData: function() {
+						    	        this.setParm('companyId', $.ligerui.get('companyIdLov').getValue())
+						    	    }
+						    	})
+						   
+						}
+						,
+                            //订单日期
+                               {
+                                    display : '<@spring.message "hbi.core.demo.dto.订单日期"/>',
+                                    name : 'orderDate',
+                                    align : 'left',
+                                    width : 150,
+                                    type : 'date'
+                                },
+                            //订单金额
+                               {
+                                    type : 'text',
+                                    label : '<@spring.message "hbi.core.demo.dto.订单总金额"/>',
+                                    name : 'ordermoney',
+                                    newline : false,
+                                    width: 120
+                                }
+                                {
+           				         display: "订单状态",
+           				         newline:false,
+           				         name: "companysSelect",
+           				         width: 120,
+           				         type: "select",
+           				         textField:"companysDescription",
+           				         options : {
+           			                    valueField : 'ID',
+           			                    textField : 'text',
+           			                    data : [ {
+           			                        ID : 'orderStatus',
+           			                        text : '新建'
+           			                    }, {
+           			                        ID : 'orderStatus',
+           			                        text : '已提交'
+           			                    },
+           			                    {
+           			                        ID : 'orderStatus',
+           			                        text : '已审批'
+           			                    } ,{
+           			                        ID : 'orderStatus',
+           			                        text : '已拒绝'
+           			                    } ]
+           			                }
+           				        } 
+          ],
+            buttons : [ {
+                text : '<@spring.message "hap.save"/>',
+                disabled : false,
+                width : 60,
+                click : function() {
+                    Hap.gridSave({
+                        form : order_detailForm,
+                        grid : order_detailGrid
+                    })
+                }
+            },
+            //�ϴ�
+            {
+                text : '提交',
+                disabled : false,
+                width : 60,
+                click : function() {
+                	window.popWin=$.ligerDialog.open({
+                		load :false,
+                		width : 800,
+                		height : 500,
+                		title :'<@spring.message "sysfile.upload"/>',
+                		url:'upLoadFile.html'
+                	})
+                }
+            }]
+        });
+       
+       
+
+        window['order_detailGrid'] = $("#order_detailGrid").ligerGrid({
+            unSetValidateAttr : false,
+            columns : [{
+            	//行号
+                display : '<@spring.message "hap.org.lines.lineNumber"/>',
+                name : 'lineNumber',
+                align : 'left',
+                width : 120
+            },
+            //物料编码
+        {
+    	display:'<@spring.message "hap.org.headers.itemCode"/>',
+    	name:'itemCode',
+    	type:'popup',
+    	width: 120,
+    	textField:'itemCode',
+    	editor:${lovService.getLov(base.contextPath,base.locale,"showitemcode")
+        }
+       ,
+        validate: {
+            required: true
+        }},
+        //物料描述
+        {
+                display : '<@spring.message "hap.org.items.itemDescription"/>',
+                name : 'itemDescription',
+                newline : false,
+                align : 'left',
+                width : 120,
+                onBeforeOpen: function() {
+                    //这里设置查询参数
+                    this.setParm('itemCode', liger.get('itemCode').getValue());
+                    this.triggerLoaded = false;//注意 
+                } 
+            },
+            //产品单位
+             {
+                type : 'text',
+                display : '<@spring.message "hap.org.lines.orderQuantityUom"/>',
+                name : 'orderQuantityUom',
+                newline : false,
+                width: 120,
+                onBeforeOpen: function() {
+                    //这里设置查询参数
+                    this.setParm('itemCode', liger.get('itemCode').getValue());
+                    this.triggerLoaded = false;//注意 
+                } 
+            },
+            //数量
+            {
+                type : 'text',
+                display : '<@spring.message "hap.org.lines.orderdQuantity"/>',
+                name : 'orderdQuantity',
+                newline : false,
+                width: 120,
+                editor : {
+                    type : 'text'
+                },
+                validate: {
+                    required: true
+                }
+            },
+            //销售单价
+            {
+                type : 'text',
+                display : '<@spring.message "hap.org.lines.unitSellingPrice"/>',
+                name : 'unitSellingPrice',
+                newline : false,
+                width: 120,
+                editor : {
+                    type : 'text'
+                },
+                validate: {
+                    required: true
+                }
+            },
+            //金额
+            {
+                display : '<@spring.message "hap.org.headers.orderMoney"/>',
+                name : 'orderMoney',
+                align : 'left',
+                width : 150,
+                newline : false,
+                editor : {
+                    type : 'text'
+                },
+                validate: {
+                    required: true
+                }
+            },
+            //备注
+            {
+                type : 'text',
+                display : '<@spring.message "hap.org.remark"/>',
+                name : 'remark',
+                newline : false,
+                width: 120,
+                editor : {
+                    type : 'text'
+                }
+            }
+            //编辑
+            /* {
+            	//�༭
+                display: '<@spring.message "hap.action"/>',
+                width  : 100,
+                align  : 'center',
+                render : function (rowdata) {
+                    return '<a href="#" onclick="editCode(' + rowdata.fruitId + ')"><@spring.message "hap.edit"/></a>'
+                }
+            } */],
+            url : '${base.contextPath}/org/oeder_detail/query',
+            toolbar : {
+                items : [ {
+                    text : '<@spring.message "hap.new"/>',
+                    disable : false,
+                    click : function() {
+                    	order_detailGrid.addRow({})
+                    },
+                    icon : 'add'
+                }, {
+                    line : true
+                }, {
+                    text : '<@spring.message "hap.delete"/>',
+                    click : function() {
+                          Hap.gridDelete({
+                            grid : order_detailGrid,
+                            url : '${base.contextPath}/org/order_detail/delete'
+                        })
+                    	order_detailGrid.deleteSelectedRow();
+                    },
+                    icon : 'delete'
+                }, {
+                    line : true
+                }, {
+                    text : '<@spring.message "hap.save"/>',
+                    click : function() {
+                        Hap.gridSave({
+                            grid : order_detailGrid,
+                            url : '${base.contextPath}/org/order_detail/submit'
+                        })
+                    },
+                    icon : 'save'
+                }]
+            },
+            enabledEdit : true,
+            width : '99%',
+            height : '98%',
+            checkbox : true
+        });
+    });
+    
+    </script>
+</body>
+</html>

@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ #{copyright}#
+  -->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="hbi.core.demo.mapper.CustomersMapper">
+    <resultMap id="BaseResultMap" type="hbi.core.demo.dto.Customers" extends="com.hand.hap.mapper.StdMapper.STD">
+        <result column="CUSTOMER_NUMBER" property="customerNumber" jdbcType="VARCHAR"/>
+         <result column="CUSTOMER_NAME" property="customerName" jdbcType="VARCHAR"/>
+         <result column="COMPANY_ID" property="companyId" jdbcType="DECIMAL"/>
+       <!--<result column="FRUIT_DESCRIPTION" property="fruitDescription" jdbcType="VARCHAR"/>
+        <result column="MY_DATE" property="myDate" jdbcType="DATE"/> -->
+        
+    </resultMap>
+	
+	<select id="selectByCustomers" parameterType="hbi.core.demo.dto.Customers" resultMap="BaseResultMap">
+		SELECT CUSTOMER_NUMBER,CUSTOMER_NAME,COMPANY_ID
+		  FROM hap_ar_customers 
+		<where>
+        	<if test="customerNumber != null">
+                and CUSTOMER_NUMBER = #{customerNumber,jdbcType=VARCHAR}
+            </if>
+            <if test="customerName != null">
+                and CUSTOMER_NAME = #{customerName,jdbcType=VARCHAR}
+            </if>
+            <if test="companyId != null">
+                and COMPANY_ID = #{companyId,jdbcType=DECIMAL}
+            </if>
+            <!--<if test="fruitCode != null">
+                AND f.fruit_code like #{fruitCode,jdbcType=VARCHAR}
+            </if>
+            <if test="myDate != null">
+                AND f.my_date like #{myDate,jdbcType=DATE}
+            </if> -->
+        </where>
+    </select>
+    
+<!--      <insert id="insertFruit" parameterType="hfs.ass.dto.Fruit" useGeneratedKeys="true" keyProperty="fruitId">
+    INSERT INTO fruit_b
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="fruitId != null" >
+        FRUIT_ID,
+      </if>
+      <if test="fruitName != null" >
+        FRUIT_NAME,
+      </if>
+      <if test="fruitDescription != null" >
+        FRUIT_DESCRIPTION,
+      </if>
+      <if test="fruitCode != null" >
+        FRUIT_CODE,
+      </if>
+      <if test="myDate != null" >
+        MY_DATE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="fruitId != null" >
+        #{fruitId,jdbcType=DECIMAL},
+      </if>
+      <if test="fruitName != null" >
+        #{fruitName,jdbcType=VARCHAR},
+      </if>
+      <if test="fruitDescription != null" >
+        #{fruitDescription,jdbcType=VARCHAR},
+      </if>
+      <if test="fruitCode != null" >
+        #{fruitCode,jdbcType=VARCHAR},
+      </if>
+      <if test="myDate != null" >
+        #{myDate,jdbcType=DATE},
+      </if>
+    </trim>
+  </insert>
+    
+    <update id="updateFruit" parameterType="hfs.ass.dto.Fruit" >
+    update fruit_b
+    <set >
+      <if test="fruitName != null" >
+        FRUIT_NAME = #{fruitName,jdbcType=VARCHAR},
+      </if>
+      <if test="fruitCode != null" >
+        FRUIT_CODE = #{fruitCode,jdbcType=VARCHAR},
+      </if>
+      <if test="fruitDescription != null" >
+        FRUIT_DESCRIPTION = #{fruitDescription,jdbcType=VARCHAR},
+      </if>
+      <if test="myDate != null" >
+        MY_DATE = #{myDate,jdbcType=DATE,javaType=DATE},
+      </if>
+    </set>
+    where FRUIT_ID = #{fruitId,jdbcType=DECIMAL}
+  </update>
+  
+  <delete id="deleteFruit" parameterType="hfs.ass.dto.Fruit" >
+    delete from fruit_b 
+    where FRUIT_ID= #{fruitId,jdbcType=DECIMAL}
+  </delete> -->
+</mapper>

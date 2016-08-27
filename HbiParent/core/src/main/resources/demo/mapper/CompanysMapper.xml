@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ #{copyright}#
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="hbi.core.demo.mapper.CompanysMapper">
+    <resultMap id="BaseResultMap" type="hbi.core.demo.dto.Companys" extends="com.hand.hap.mapper.StdMapper.STD">
+        <result column="COMPANY_ID" property="companyId" jdbcType="DECIMAL"/>
+        <result column="COMPANY_NUMBER" property="companyNumber" jdbcType="VARCHAR"/>
+        <result column="COMPANY_NAME" property="companyName" jdbcType="VARCHAR"/>
+        <result column="ENABLED_FLAG" property="enabledFlag" jdbcType="VARCHAR"/>
+        <result column="CREATION_DATE" property="creationDate" jdbcType="DATE"/>
+    </resultMap>
+
+	<select id="selectByCompanys" parameterType="hbi.core.demo.dto.Companys" resultMap="BaseResultMap">
+		SELECT company_id,
+		       company_number,
+		       company_name,
+		       enabled_flag,
+		       creation_date
+		  FROM hap_org_companys 
+		   <!-- left join fruit_tl fl
+		      on f.fruit_id = fl.fruit_id
+		      and fl.lang = #{request.locale,jdbcType=VARCHAR} -->
+		<where>
+        	<if test="companyId != null">
+                and company_id = #{companyId,jdbcType=DECIMAL}
+            </if>
+            <if test="companyNumber != null">
+                AND company_number like #{companyNumber,jdbcType=VARCHAR}
+            </if>
+            <if test="companyName != null">
+                AND company_name like #{companyName,jdbcType=VARCHAR}
+            </if>
+            <if test="enabledFlag != null">
+                AND enabled_flag like #{enabledFlag,jdbcType=VARCHAR}
+            </if>
+            <if test="creationDate != null">
+                AND creation_date like #{creationDate,jdbcType=DATE}
+            </if>
+        </where>
+    </select>
+    
+     <insert id="insertCompanys" parameterType="hbi.core.demo.dto.Companys" useGeneratedKeys="true" keyProperty="fruitId">
+   
+    INSERT INTO hap_org_companys
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="companyId != null" >
+        COMPANY_ID,
+      </if>
+      <if test="companyNumber != null" >
+        COMPANY_NUMBER,
+      </if>
+      <if test="companyName != null" >
+        COMPANY_NAME,
+      </if>
+      <if test="enabledFlag != null" >
+        ENABLED_FLAG,
+      </if>
+      <if test="creationDate != null" >
+        CREATION_DATE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="companyId != null" >
+        #{companyNumber,jdbcType=DECIMAL},
+      </if>
+      <if test="companyNumber != null" >
+        #{companyNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="companyName != null" >
+        #{companyName,jdbcType=VARCHAR},
+      </if>
+      <if test="enabledFlag != null" >
+        #{enabledFlag,jdbcType=VARCHAR},
+      </if>
+      <if test="creationDate != null">
+        #{creationDate,jdbcType=DATE},
+      </if>
+    </trim>
+  </insert>
+    
+    <update id="updateCompanys" parameterType="hbi.core.demo.dto.Companys" >
+    update hap_org_companys
+    <set >
+      <if test="companyNumber != null" >
+        COMPANY_NUMBER = #{companyNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="companyName != null" >
+        COMPANY_NAME = #{companyName,jdbcType=VARCHAR},
+      </if>
+      <if test="enabledFlag != null" >
+        ENABLED_FLAG = #{enabledFlag,jdbcType=VARCHAR},
+      </if>
+      <if test="creationDate != null">
+        CREATION_DATE = #{creationDate,jdbcType=DATE},
+      </if>
+    </set>
+    where COMPANY_ID = #{companyId,jdbcType=DECIMAL}
+  </update>
+  
+  <delete id="deleteCompanys" parameterType="hbi.core.demo.dto.Companys" >
+    delete from hap_org_companys hoc
+    where hoc.COMPANY_ID= #{companyId,jdbcType=DECIMAL}
+  </delete>
+</mapper>
